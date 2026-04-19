@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InteractHub.Infrastructure.Migrations
 {
     [DbContext(typeof(InteractHubDbContext))]
-    [Migration("20260419025328_auth")]
-    partial class auth
+    [Migration("20260419030753_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
