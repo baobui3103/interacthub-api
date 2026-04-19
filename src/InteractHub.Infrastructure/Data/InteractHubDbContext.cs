@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,30 @@ namespace InteractHub.Infrastructure.Data
                 e.Property(u => u.Status).HasDefaultValue(UserStatus.Active);
                 e.Property(u => u.IsDeleted).HasDefaultValue(false);
             });
+
+            ApplySoftDeleteQueryFilters(builder);
+        }
+
+        private static void ApplySoftDeleteQueryFilters(ModelBuilder builder)
+        {
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                var clrType = entityType.ClrType;
+                if (clrType == null || !typeof(ISoftDeleteEntity).IsAssignableFrom(clrType) || clrType.IsAbstract)
+                    continue;
+
+                var method = typeof(InteractHubDbContext).GetMethod(
+                    nameof(SetSoftDeleteQueryFilter),
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                var generic = method!.MakeGenericMethod(clrType);
+                generic.Invoke(null, new object[] { builder });
+            }
+        }
+
+        private static void SetSoftDeleteQueryFilter<TEntity>(ModelBuilder builder)
+            where TEntity : class, ISoftDeleteEntity
+        {
+            builder.Entity<TEntity>().HasQueryFilter(e => !e.IsDeleted);
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

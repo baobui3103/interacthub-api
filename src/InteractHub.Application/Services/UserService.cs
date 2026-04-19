@@ -23,7 +23,7 @@ namespace InteractHub.Application.Services
         public async Task<GetAllActiveUsersRes> GetAllActiveUsers()
         {
             var users = await _userManager.Users
-                .Where(x => x.Status == UserStatus.Active && !x.IsDeleted)
+                .Where(x => x.Status == UserStatus.Active)
                 .ToListAsync();
 
             _loggerService.LogInfo("Listed active users");
