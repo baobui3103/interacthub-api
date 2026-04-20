@@ -9,6 +9,7 @@ namespace InteractHub.Application
         public static void ConfigureApplication(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPostService, PostService>();
         }
     }
 }
